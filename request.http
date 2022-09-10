@@ -1,4 +1,0 @@
-POST https://kai.ru/raspisanie?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=schedule HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
-groupId=23653

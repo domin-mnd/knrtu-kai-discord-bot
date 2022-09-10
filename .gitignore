@@ -1,6 +1,7 @@
 config.json
 node_modules/
 package-lock.json
+request.http
 db/
 *test*
 *.zip
