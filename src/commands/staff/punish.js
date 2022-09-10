@@ -1,4 +1,4 @@
-const { Client, Message, EmbedBuilder, Colors } = require("discord.js");
+const { Client, Message } = require("discord.js");
 const config = require("../../config.json");
 
 
