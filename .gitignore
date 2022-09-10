@@ -1,0 +1,7 @@
+config.json
+node_modules/
+package-lock.json
+db/
+*test*
+*.zip
+.idea/
