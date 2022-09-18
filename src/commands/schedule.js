@@ -153,7 +153,7 @@ module.exports = {
         let groupId, schedule;
 
         try {
-            // Делаю пост реквест для получение id группы
+            // Делаю GET запрос для получения id группы
             groupId = await getGroupId(id);
         } catch (err) {
             await message.reply('Неудалось установить ID номера группы, попробуйте позже!');
@@ -176,7 +176,7 @@ module.exports = {
         groupId = groupId.data[0].id;
 
         try {
-            // Делаю пост реквест для получение расписания группы
+            // Делаю POST запрос для получения расписания группы
             schedule = await getSchedule(groupId);
         } catch (err) {
             await message.reply('Неудалось установить расписание группы, попробуйте позже!');
