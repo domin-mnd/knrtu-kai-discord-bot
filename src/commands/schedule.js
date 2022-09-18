@@ -16,32 +16,26 @@ function capitalizeEachWord(string) {
 
 function weekNumber() {
     // Номер недели
-    const currentDate = new Date();
-    const startDate = new Date(currentDate.getFullYear(), 0, 1);
-    const days = Math.floor(
-        (currentDate - startDate) /
-        (24 * 60 * 60 * 1000)
-    );
-    return Math.ceil(days / 7);
+    let date = new Date(new Date().getTime());
+    date.setHours(0, 0, 0, 0);
+    // Четверг этой недели решает год.
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    // 4 Января - это всегда первая неделя
+    let week1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
 }
 
 function weekEven(opts) {
     let even = '';
-    let weekMod = weekNumber() % 2;
+    let weekNum = weekNumber();
+    if (opts.nextWeek) weekNum = weekNum + 1;
+    let weekMod = weekNum % 2;
     if (opts.type === 'short') {
         even = 'чет';
         if (weekMod) even = 'неч';
-        if (opts.invert) {
-            if (even = 'чет') even = 'неч';
-            else even = 'чет';
-        }
     } else if (opts.type === 'long') {
         even = 'Чётная неделя';
         if (weekMod) even = 'Нечётная неделя';
-        if (opts.invert) {
-            if (even = 'Чётная неделя') even = 'Нечётная неделя';
-            else even = 'Чётная неделя';
-        }
     }
     return even;
 }
@@ -97,12 +91,12 @@ function parseScheduleAsField(schedule, day, opts) {
     if ((day === 1 && opts.type === 'tomorrow') || opts.type === 'nextweek') {
         even = weekEven({
             type: 'short',
-            invert: true
+            nextWeek: true
         });
     } else {
         even = weekEven({
             type: 'short',
-            invert: false
+            nextWeek: false
         });
     }
 
@@ -230,7 +224,7 @@ module.exports = {
             // Узнаю если завтра понедельник и если да, то инвертирую значение недели
             let footer = '';
             if (day === 1) {
-                footer = weekEven({ type: 'long', invert: true });
+                footer = weekEven({ type: 'long', nextWeek: true });
             } else {
                 footer = weekEven({ type: 'long' });
             }
@@ -362,7 +356,7 @@ module.exports = {
                 .setColor(Colors.Blue)
                 .setTimestamp()
                 .setFooter({
-                    text: weekEven({ type: 'long', invert: true }),
+                    text: weekEven({ type: 'long', nextWeek: true }),
                     iconURL: message.author.avatarURL()
                 })
 
