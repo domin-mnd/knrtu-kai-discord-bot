@@ -1,8 +1,18 @@
-config.json
-node_modules/
+# Node
+node_modules
 package-lock.json
-request.http
-db/
+
+# Yarn
+yarn.lock
+.yarnrc
+
+# Webstorm
+.idea
+
+# Typescript
+dist
+
+# Other
+.git
+.env
 *test*
-*.zip
-.idea/

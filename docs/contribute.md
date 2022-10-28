@@ -1,66 +1,43 @@
 # Контрибуторам
 
-Для старта бота необходим файл `config.json` в папке `/src`. Пример JSON файла:
+Для старта бота необходим файл `.env` в папке `/src`. Пример environment файла:
 
-```json
-{
-    "bot": {
-        "token": "Токен бота",
-        "prefix": "!",
-        "guild": "Айди сервера",
-        "cooldownCacheTTL": 259200
-    },
-    "discord": {
-        "roles": {
-            "staff": "Айди роли модерации",
-            "owner": "Айди роли владельца бота",
-            "prisoner": "Айди роли замученного участника",
-            "member": "Айди роли участника сервера"
-        },
-        "channels": {
-            "welcome": "канал для отправки приветственных сообщений"
-        },
-        "messages": {
-            "welcome": "Добро пожаловать на сервер {server_name}, {user_ping}!",
-            "coolDown": "Сорян, тебе нужно подождать {time} секунд для повторного воспроизводства команды."
-        }
-    }
-}
+```env
+DISCORD_TOKEN=дискорд токен бота
+OWNERS=айди
 ```
-
-## Загрузчики
-
-Найти загрузчики событий и команд вы можете в папке `/src/utils`.
 
 ## Команды
 
 Команды находятся в папке `/src/commands`. Пример содержания файла:
 
-```js
-const { Client, Message, EmbedBuilder } = require("discord.js");
+```ts
+import { ApplyOptions } from '@sapphire/decorators';
+import { Command } from '@sapphire/framework';
 
-module.exports = {
-    name: "имя-команды",
-    description: "Описание команды",
-    usage: "Использование", // Показывает шаблон использования команды при написании !help (!пример <user> <message>)
-    example: "Пример", // Показывает пример использования команды при написании !help (!пример @Wumpus#0000 test)
-    requiredPermissions: [], // Массив с необходимыми для бота правами для использования "MANAGE_MESSAGES" и т.д.
-    checks: [{ // Используется для проверок до воспроизводства кода команды, Это пример при котором пользователю не дают воспользоваться командой в определённом канале
-        check: (message, args) => message.channel.name !== "example", // проверка должна вывести true или false. Аргементы, которые есть это message и args.
-        error: "Вы не можете воспользоваться этой командой в канале под названием example" // Отвечает пользователю если проверка прошла неудачно.
-    }],
-    cooldown: 30000,
-    /**
-     * @param {Client} client 
-     * @param {Message} message 
-     * @param {Array} args 
-     */
-    run: async (client, message, args) => {
-        message.reply("Вы прошли проверку :)")
-    },
+@ApplyOptions<Command.Options>({
+	description: 'Описание команды' // Описание команды
+})
+export class UserCommand extends Command {
+	// Регистрация аппликэйшен команды
+	public override registerApplicationCommands(registry: Command.Registry) {
+
+		// Регистрация слэш команды
+		registry.registerChatInputCommand({
+			name: this.name, // Название команды == название файла
+			description: this.description // Описание команды берётся из ApplyOptions
+		});
+	}
+
+	// Слэш команда
+	public async chatInputRun(interaction: Command.ChatInputInteraction) {
+		await interaction.reply({
+            content: 'Эта замечательная команда работает',
+        });
+	}
 }
 ```
 
-## События
+## Старт
 
-События находятся в папке `/src/events`. Название файла внутри этой папки = событие.
+При старте бота используется файл `/src/lib/util.ts`.
