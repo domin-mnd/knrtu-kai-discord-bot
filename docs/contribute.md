@@ -1,10 +1,17 @@
 # Контрибуторам
 
-Для старта бота необходим файл `.env` в папке `/src`. Пример environment файла:
+Для старта бота необходимы 2 файла `.env` в папке `/src` и в папке `/src/prisma`.
 
+Пример environment файла в `/src`:
 ```env
 DISCORD_TOKEN=дискорд токен бота
 OWNERS=айди
+```
+
+Пример environment файла в `/src/prisma`:
+```env
+DATABASE_URL="mysql://..."
+SHADOW_DATABASE_URL="mysql://..."
 ```
 
 ## Команды

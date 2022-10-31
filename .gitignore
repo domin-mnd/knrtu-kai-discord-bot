@@ -12,6 +12,9 @@ yarn.lock
 # Typescript
 dist
 
+# Prisma
+src/prisma/migrations
+
 # Other
 .git
 .env

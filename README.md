@@ -16,8 +16,8 @@
 
 Помимо библиотеки `discord.js` и модулей `@sapphire` в проекте были использованы такие модули как:
 - [`@supersetkai/kai.js`](https://supersetkai.ru/projects/kai.js) - модуль (оболочка АПИ) для работы с расписанием КНИТУ-КАИ
-- [`axios`](https://axios-http.com) - HTTP клиент для браузера и рантайма Node.JS основанный на промисах
 - [`colorette`](https://github.com/jorgebucaran/colorette) - модуль для добавления цветов в терминал
+- [`prisma`](https://www.prisma.io) - ORM для базы данных mysql
 
 ## Помощь
 
