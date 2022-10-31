@@ -19,13 +19,13 @@ export class UserCommand extends Command {
 	// Слэш команда
 	public async chatInputRun(interaction: Command.ChatInputInteraction) {
 
-		const msg = await interaction.reply({ content: 'Пинг?', fetchReply: true });
+		const msg = await interaction.reply({ content: ':grey_question: Пинг?', fetchReply: true });
 		const createdTime = msg instanceof Message ? msg.createdTimestamp : Date.parse(msg.timestamp);
 
 		const content = [
-			'Понг!',
-			`Задержка бота ${Math.round(this.container.client.ws.ping)}ms.`,
-			`Задержка АПИ ${createdTime - interaction.createdTimestamp}ms.`
+			':ping_pong: **Понг**',
+			`> Задержка бота ${Math.round(this.container.client.ws.ping)}ms.`,
+			`> Задержка АПИ ${createdTime - interaction.createdTimestamp}ms.`
 		].join('\n');
 
 		return await interaction.editReply({

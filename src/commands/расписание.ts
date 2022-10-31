@@ -56,7 +56,7 @@ export class UserCommand extends Command {
 		const day: string = interaction.options.getString('день', true);
 
         await interaction.reply({
-            content: `Получаю расписание по номеру группы: "${group}"...`,
+            content: `:arrow_right_hook: Получаю расписание по номеру группы: "${group}"...`,
             fetchReply: true
         });
 
@@ -73,31 +73,31 @@ export class UserCommand extends Command {
             ]
             if (raw.error.russian = ruErrors[0]) {
                 const ids = raw.ids?.map((group: any) => `\`${group.group.name}\``).join(', ');
-                const list = ids ? `Список найденных групп: ${ids}` : '';
+                const list = ids ? `> Список найденных групп: ${ids}` : '';
                 await interaction.editReply({
-                    content: `Группы по данному запросу не найдено!\n${list}`
+                    content: `:no_entry_sign: Группы по данному запросу не найдено!\n${list}`
                 });
                 return;
             } else if (raw.error.russian = ruErrors[1]) {
                 await interaction.editReply({
-                    content: `Сервер не работает, проверяю базу данных...`
+                    content: `:broken_heart: Сервер не работает, проверяю базу данных...`
                 });
                 raw = await db.getSchedule(group) as any;
             } else {
                 await interaction.editReply({
-                    content: `При поиске расписания произошла ошибка: ${raw.error.russian}`
+                    content: `:no_entry_sign: При поиске расписания произошла ошибка: ${raw.error.russian}`
                 });
                 return;
             }
         } else {
             await interaction.editReply({
-                content: `Кэширую расписание...`
+                content: `:recycle: Кэширую расписание...`
             });
             await db.saveSchedule(group, raw);
         }
 
 		await interaction.editReply({
-			content: `Форматирую расписание...`
+			content: `:thought_balloon: Форматирую расписание...`
 		});
 
         let dayOfTheWeek: number = 0;
@@ -123,7 +123,7 @@ export class UserCommand extends Command {
         }
 
         await interaction.editReply({
-            content: `Отправляю расписание...`
+            content: `:white_check_mark: Отправляю расписание...`
         });
 
         const embed = new MessageEmbed()

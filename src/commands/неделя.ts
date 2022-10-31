@@ -21,7 +21,7 @@ export class UserCommand extends Command {
         const weekType = this.scheduleWeekType();
 
 		await interaction.reply({
-            content: `**Сейчас**\n> ${weekType.weekType} (${weekType.weekNumber} неделя)`,
+            content: `:calendar_spiral: **Сейчас**\n> ${weekType.weekType} (${weekType.weekNumber} неделя)`,
             fetchReply: true
         });
 	}

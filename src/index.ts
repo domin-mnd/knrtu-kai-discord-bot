@@ -28,6 +28,7 @@ const main = async () => {
 		client.logger.info('Logging in');
 		await client.login();
 		client.logger.info('logged in');
+		client.user?.setActivity('/помощь');
 	} catch (error) {
 		client.logger.fatal(error);
 		client.destroy();
