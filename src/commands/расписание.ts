@@ -3,7 +3,7 @@ import { Command } from '@sapphire/framework';
 import { MessageEmbed } from 'discord.js';
 
 // Модуль для получения форматированного расписания
-import { Schedule, ScheduleInterface } from '@supersetkai/kai.js';
+import { Schedule, ScheduleInterface, ScheduleSpace } from '@supersetkai/kai.js';
 const schedule: ScheduleInterface = new Schedule();
 
 // Класс с базой данных суперсет для расписания
@@ -65,6 +65,7 @@ export class UserCommand extends Command {
         // https://www.npmjs.com/package/@supersetkai/kai.js
         // schedule - класс расписания (см. строка 7)
         let raw = await schedule.getSchedule(group);
+        // Не беру из базы данных т.к. перед кэшированием будет выдано старое расписание
 
         if (raw.error) {
             const ruErrors = [
@@ -82,19 +83,24 @@ export class UserCommand extends Command {
                 await interaction.editReply({
                     content: `:broken_heart: Сервер не работает, проверяю базу данных...`
                 });
-                raw = await db.getSchedule(group) as any;
+                raw = await db.getSchedule(group).catch((err: any) => {
+                    interaction.editReply({
+                        content: `:no_entry_sign: Ошибка при использовании базы данных`
+                    });
+                    console.error(err);
+                    return;
+                }) as ScheduleSpace.Formatted & ScheduleSpace.Error;
             } else {
                 await interaction.editReply({
                     content: `:no_entry_sign: При поиске расписания произошла ошибка: ${raw.error.russian}`
                 });
                 return;
             }
-        } else {
-            await interaction.editReply({
-                content: `:recycle: Кэширую расписание...`
-            });
-            await db.saveSchedule(group, raw);
         }
+
+        // Сохраняю расписание асинхронно в базу данных
+        // При ошибке не влияет на работу команды
+        db.saveSchedule(group, raw).catch(console.error);
 
 		await interaction.editReply({
 			content: `:thought_balloon: Форматирую расписание...`
@@ -141,5 +147,6 @@ export class UserCommand extends Command {
             content: '** **',
             embeds: [embed]
         });
+
 	}
 }

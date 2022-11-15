@@ -13,7 +13,7 @@
         "@sapphire/plugin-editable-commands": "^2.0.1",
         "@sapphire/plugin-logger": "^3.0.1",
         "@sapphire/plugin-subcommands": "^3.2.3",
-        "@supersetkai/kai.js": "^0.1.1",
+        "@supersetkai/kai.js": "^0.1.6",
         "colorette": "^2.0.19",
         "discord-api-types": "^0.33.5",
         "discord.js": "^13.11.0",

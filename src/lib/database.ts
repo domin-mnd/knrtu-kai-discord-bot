@@ -27,11 +27,11 @@ export class Database {
         });
     }
 
-    public async getSchedule(group: number): Promise<ScheduleSpace.Formatted> {
+    public async getSchedule(group: number): Promise<ScheduleSpace.Formatted & ScheduleSpace.Error> {
         const schedule = await this._client.schedule.findUnique({
             where: { group }
         });
 
-        return JSON.parse(schedule?.data as string) as ScheduleSpace.Formatted || [];
+        return JSON.parse(schedule?.data as string) as ScheduleSpace.Formatted & ScheduleSpace.Error || [];
     }
 }

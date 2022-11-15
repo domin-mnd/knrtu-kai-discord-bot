@@ -1,7 +1,11 @@
 import type { ScheduleSpace } from '@supersetkai/kai.js';
 
 export class ScheduleParser {
-    public constructor() {};
+    private weekDays: string[];
+
+    public constructor() {
+        this.weekDays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+    };
 
     /**
      * Получение недельного расписания в виде массива с филдами для MessageEmbed
@@ -9,7 +13,7 @@ export class ScheduleParser {
      * @param scheduleWeekType Тип недели (чет/неч)
      * @example
      * const formatted = await schedule.getSchedule(group);
-     * const fields = schedule.scheduleParseWeekAsField(formatted, 'чет');
+     * const fields = parser.scheduleParseWeekAsField(formatted, 'чет');
      * console.log(fields);
      * // returns [
      * //  {
@@ -29,24 +33,16 @@ export class ScheduleParser {
      public parseWeekAsField(schedule: ScheduleSpace.Formatted, scheduleWeekType: string): Array<any> {
 
         let weekType: string = scheduleWeekType;
-        let weekDays: string[] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
         let temp: any[] = [];
         let response: any[] = [];
 
-        schedule.forEach((day: any[]) => {
-
-            // Преобразования объекта с предметом в строку
-            // Фильтрация предметов по типу недели (чет/неч)
-            // Некоторые предметы могут быть в обоих типах недели
-            // Есть проблема с тем, что некоторые предметы имеют тип недели не "чет"/"неч", а например "нет" (см. расписание группы 4131)
-            let subject = day.map((subject: any) => (weekType === subject.day.evenOdd.raw || subject.day.evenOdd.raw === '') ? [
-                `> **${subject.day.time.full}** ${subject.class.name}`,
-                `> ${subject.classroom.number} каб. - ${subject.building.number} зд. - ${subject.class.type}`
-            ].join('\n') : undefined);
+        schedule.forEach((day: ScheduleSpace.Subject.Formatted[]) => {
+            let subject = this.mapDay(day, weekType);
 
             subject = subject.filter((str: any) => str !== undefined);
 
-            temp.push(subject.join('\n'));
+            // Если предметов нет, то добавляем пустую строку
+            temp.push(subject.join('\n') ? subject.join('\n') : '\u200B');
             
             // Разделители после вторника и четверга, чтобы поля были в 2 ряда
             if (response.length === 2 || response.length === 5) {
@@ -58,14 +54,14 @@ export class ScheduleParser {
             }
 
             response.push({
-                name: weekDays[schedule.indexOf(day)],
+                name: this.weekDays[schedule.indexOf(day)],
                 value: temp.join(''),
                 inline: true
             });
             temp = [];
         });
 
-        // Разделитель после субботы, чтобы поле с субботой не было вдали (см. строка 189)
+        // Разделитель после субботы, чтобы поле с субботой не было вдали
         response.push({
             name: '\u200B',
             value: '\u200B',
@@ -81,7 +77,7 @@ export class ScheduleParser {
      * @param dayOfTheWeek День недели в виде числа (1 - понедельник, 2 - вторник, ...)
      * @example
      * const formatted = await schedule.getSchedule(group);
-     * const fields = schedule.scheduleParseWeekAsField(formatted, 'чет');
+     * const fields = parser.scheduleParseWeekAsField(formatted, 'чет');
      * console.log(fields);
      * // returns [
      * //  {
@@ -93,37 +89,36 @@ export class ScheduleParser {
      * @returns Массив с расписанием на день
      */
     public parseDayAsField(schedule: ScheduleSpace.Formatted, dayOfTheWeek: number): Array<any> {
-        // День недели (положение в массиве расписания см. строка 10 файла ниже)
-        // /node_modules/@supersetkai/kai.js/Source/Methods/Schedule/Formatted/GetSchedule.js
+        // День недели (положение в массиве расписания см. на 10 строк файла ниже)
+        // /node_modules/@supersetkai/kai.js/src/methods/schedule/formatted/getSchedule.js
         const day = schedule[dayOfTheWeek - 1];
 
         let weekType = this.weekType();
         
         // Если расписание не на сегодня, и день недели понедельник, то инвертируем тип недели
         if (dayOfTheWeek !== new Date().getDay() && dayOfTheWeek === 1) {
-            weekType = weekType === 'чет' ? 'неч' : 'чет';
+            weekType = this.invertWeekType(weekType);
         }
 
-        // Преобразования объекта с предметом в строку
-        // Фильтрация предметов по типу недели (чет/неч)
-        // Некоторые предметы могут быть в обоих типах недели
-        // Есть проблема с тем, что некоторые предметы имеют тип недели не "чет"/"неч", а например "нет" (см. расписание группы 4131)
-        let response = day.map((subject: any) => (weekType === subject.day.evenOdd.raw || subject.day.evenOdd.raw === '') ? [
-            `> **${subject.day.time.full}** ${subject.class.name}`,
-            `> ${subject.classroom.number} каб. - ${subject.building.number} зд. - ${subject.class.type}`
-        ].join('\n') : undefined);
+        let response = this.mapDay(day, weekType);
 
         response = response.filter((str: any) => str !== undefined);
 
-        const weekDays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-
         // Вывод объекта с днём недели и расписанием
         return [{
-            name: weekDays[dayOfTheWeek - 1],
+            name: this.weekDays[dayOfTheWeek - 1],
             value: response.join('\n')
         }]
     }
 
+    /**
+     * Получение типа недели на сегодня
+     * @example
+     * const weekType = parser.weekType();
+     * console.log(weekType);
+     * // returns "чет"
+     * @returns "чет" или "неч"
+     */
     public weekType(): string {
         let date = new Date(new Date().getTime());
         date.setHours(0, 0, 0, 0);
@@ -135,5 +130,31 @@ export class ScheduleParser {
         let week1 = new Date(date.getFullYear(), 0, 4);
         let weekNumber = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
         return (weekNumber % 2 === 0) ? 'чет' : 'неч';
+    }
+
+    private mapDay(day: ScheduleSpace.Subject.Formatted[], weekType: string): (string | undefined)[] {
+
+        // Преобразования объекта с предметом в строку
+        // Фильтрация предметов по типу недели (чет/неч)
+        // Некоторые предметы могут быть в обоих типах недели
+        // См. /src/tests/data/subjectFields.json
+        return day.map((subject: ScheduleSpace.Subject.Formatted) => (
+            subject.day.evenOdd.raw.includes(weekType) ||
+            subject.day.evenOdd.raw === '' ||
+            subject.day.evenOdd.raw.includes('еженед')
+        ) ? [
+            `> **${subject.day.time.full}** ${subject.class.name}`,
+            `> ${subject.classroom.number} каб. - ${subject.building.number} зд. - ${subject.class.type}`
+        ].join('\n') : (
+            !subject.day.evenOdd.raw.includes(this.invertWeekType(weekType))
+        ) ? [
+            `> **${subject.day.time.full}** ${subject.class.name}`,
+            `> ${subject.classroom.number} каб. - ${subject.building.number} зд. - ${subject.class.type}`,
+            `> __${subject.day.evenOdd.raw}__ нед.`
+        ].join('\n') : undefined);
+    }
+
+    private invertWeekType(weekType: string): string {
+        return weekType === 'чет' ? 'неч' : 'чет';
     }
 }
