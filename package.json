@@ -1,17 +1,46 @@
 {
-    "name": "raspisanie-kai",
+    "name": "bot-kai",
     "version": "1.0.0",
-    "description": "Расписание КАИ от Камиля",
-    "main": "src/index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon ."
-    },
-    "author": "Domin",
+    "description": "Инструмент для студентов КАИ",
+    "main": "dist/index.js",
+    "author": "@supersetkai",
     "license": "GPL-3.0-or-later",
     "dependencies": {
-        "axios": "^0.27.2",
-        "chalk": "^4.1.2",
-        "discord.js": "^14.1.1"
+        "@prisma/client": "^4.5.0",
+        "@sapphire/decorators": "^5.0.0",
+        "@sapphire/framework": "^3.1.3",
+        "@sapphire/plugin-api": "^4.0.1",
+        "@sapphire/plugin-editable-commands": "^2.0.1",
+        "@sapphire/plugin-logger": "^3.0.1",
+        "@sapphire/plugin-subcommands": "^3.2.3",
+        "@supersetkai/kai.js": "^0.1.6",
+        "colorette": "^2.0.19",
+        "discord-api-types": "^0.33.5",
+        "discord.js": "^13.11.0",
+        "dotenv-cra": "^3.0.2",
+        "prisma": "^4.5.0",
+        "reflect-metadata": "^0.1.13"
+    },
+    "devDependencies": {
+        "@sapphire/prettier-config": "^1.4.4",
+        "@sapphire/ts-config": "^3.3.4",
+        "@types/node": "^18.11.7",
+        "@types/ws": "^8.5.3",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^2.7.1",
+        "tsc-watch": "^5.0.3",
+        "typescript": "^4.8.4"
+    },
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "start": "node dist/index.js",
+        "dev": "run-s build start",
+        "watch:start": "tsc-watch --onSuccess \"node ./dist/index.js\"",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "prettier": "@sapphire/prettier-config",
+    "prisma": {
+        "schema": "src/prisma/schema.prisma"
     }
 }

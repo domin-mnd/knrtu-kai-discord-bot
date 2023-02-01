@@ -1,8 +1,21 @@
-config.json
-node_modules/
+# Node
+node_modules
 package-lock.json
-request.http
-db/
-*test*
-*.zip
-.idea/
+
+# Yarn
+yarn.lock
+.yarnrc
+
+# Webstorm
+.idea
+
+# Typescript
+dist
+
+# Prisma
+src/prisma/migrations
+
+# Other
+.git
+.env
+/tests/
